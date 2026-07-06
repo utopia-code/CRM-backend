@@ -1,0 +1,162 @@
+[
+    {
+        "id": 1,
+        "organization": "Teatro López de Ayala",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "",
+        "createdAt": "2026-02-19T08:48:27.218Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 1,
+                "name": "Paloma Morcillo",
+                "role": "Directora do teatro",
+                "email": "pmorcillo@teatrolopezdeayala.es",
+                "telephone": "924 01 31 40",
+                "createdAt": "2026-02-19T08:48:27.218Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "organization": "Comisión de festas do Cruceiro da Coruña",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "Festas en Setembro e festa xuvenil en abril",
+        "createdAt": "2026-02-20T17:48:57.815Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 2,
+                "name": "Marcos",
+                "role": "Comisión de festas",
+                "email": "",
+                "telephone": "+34 646 71 85 80",
+                "createdAt": "2026-02-20T17:48:57.815Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "organization": "Cabana de Bergantiños",
+        "subject": "",
+        "status": "ACTIVE",
+        "notes": "",
+        "createdAt": "2026-02-25T08:48:01.320Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 3,
+                "name": "Silvia",
+                "role": "Cultura",
+                "email": "silvialosada3@gmail.com",
+                "telephone": "626907363",
+                "createdAt": "2026-02-25T08:48:01.320Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "organization": "Comunic-ARTE",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "Organiza a festa do queixo de San Simón en Vilalba",
+        "createdAt": "2026-02-25T09:25:41.622Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 4,
+                "name": "Patricia",
+                "role": "",
+                "email": "patricia.fdez.garcia@gmail.com",
+                "telephone": "692843313",
+                "createdAt": "2026-02-25T09:25:41.622Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "organization": "Concello de Arbo",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "",
+        "createdAt": "2026-02-25T12:29:05.065Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 5,
+                "name": "Raúl",
+                "role": "Concelleiro de Cultura",
+                "email": "raulrodriguezarbo@gmail.com",
+                "telephone": "609672716",
+                "createdAt": "2026-02-25T12:29:05.065Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "organization": "Concello de Meaño",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "",
+        "createdAt": "2026-02-25T15:07:23.203Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 6,
+                "name": "Cristina",
+                "role": "Cultura",
+                "email": "culturaxuventude@concellodemeano.com",
+                "telephone": "986747102",
+                "createdAt": "2026-02-25T15:07:23.203Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "organization": "Concello de Forcarei",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "",
+        "createdAt": "2026-02-26T10:28:23.753Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 7,
+                "name": "Ángeles",
+                "role": "Concelleira de Cultura",
+                "email": "",
+                "telephone": "655919196",
+                "createdAt": "2026-02-26T10:28:23.753Z",
+                "deletedAt": null
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "organization": "Anpa A Xanela",
+        "subject": "",
+        "status": "POTENTIAL",
+        "notes": "",
+        "createdAt": "2026-02-27T09:46:23.932Z",
+        "deletedAt": null,
+        "contacts": [
+            {
+                "id": 8,
+                "name": "Ismael",
+                "role": "Presidente da Anpa",
+                "email": "comunicacion.anpaxanela@gmail.com",
+                "telephone": "",
+                "createdAt": "2026-02-27T09:46:23.932Z",
+                "deletedAt": null
+            }
+        ]
+    }
+]
