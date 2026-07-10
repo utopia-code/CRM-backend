@@ -48,4 +48,8 @@ export class Client {
 
   @OneToMany(() => Interaction, (interaction) => interaction.client)
   interactions: Interaction[];
+
+  interactionsCount?: number;
+
+  tasksCount?: number;
 }

@@ -10,6 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
+import { ClientListDto } from './dtos/client-list.dto';
 import { CreateClientDto } from './dtos/create-client.dto';
 import { CreateContactDto } from './dtos/create-contact.dto';
 import { UpdateClientDto } from './dtos/update-client.dto';
@@ -26,6 +27,15 @@ export class ClientController {
   @Post()
   createClient(@Body() createClientDto: CreateClientDto) {
     return this.clientService.createClient(createClientDto);
+  }
+
+  // =========================
+  // LIST OF CLIENTS
+  // =========================
+
+  @Get('list')
+  findListOfClients(): Promise<ClientListDto[]> {
+    return this.clientService.findLClientsList();
   }
 
   @Get()

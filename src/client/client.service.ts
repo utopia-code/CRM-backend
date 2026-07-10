@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ClientListDto } from './dtos/client-list.dto';
 import { CreateClientDto } from './dtos/create-client.dto';
 import { CreateContactDto } from './dtos/create-contact.dto';
 import { UpdateClientDto } from './dtos/update-client.dto';
@@ -36,6 +37,45 @@ export class ClientService {
     });
 
     return this.contactRepo.save(contact);
+  }
+
+  async findLClientsList(): Promise<ClientListDto[]> {
+    const clients = await this.clientRepo
+      .createQueryBuilder('client')
+      .leftJoinAndSelect('client.contacts', 'contact')
+      .select([
+        'client.id',
+        'client.organization',
+        'client.status',
+
+        'contact.id',
+        'contact.name',
+        'contact.role',
+        'contact.email',
+        'contact.telephone',
+      ])
+      .loadRelationCountAndMap(
+        'client.interactionsCount',
+        'client.interactions',
+      )
+      .loadRelationCountAndMap('client.tasksCount', 'client.tasks')
+      .orderBy('client.organization', 'ASC')
+      .getMany();
+
+    return clients.map((client) => ({
+      id: client.id,
+      organization: client.organization,
+      status: client.status,
+      contacts: client.contacts.map((contact) => ({
+        id: contact.id,
+        name: contact.name,
+        role: contact.role,
+        email: contact.email,
+        telephone: contact.telephone,
+      })),
+      interactionsCount: client.interactionsCount ?? 0,
+      tasksCount: client.tasksCount ?? 0,
+    }));
   }
 
   async findAll(include?: string) {
