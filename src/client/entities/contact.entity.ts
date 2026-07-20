@@ -34,6 +34,7 @@ export class Contact {
   // RELATIONSHIP
 
   @ManyToOne(() => Client, (client) => client.contacts, {
+    nullable: false,
     onDelete: 'CASCADE',
   })
   client: Client;

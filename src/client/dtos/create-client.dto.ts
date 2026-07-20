@@ -1,19 +1,11 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ClientStatus } from '../enums/client-status.enum';
+import { Type } from 'class-transformer';
+import { IsOptional, ValidateNested } from 'class-validator';
+import { ClientDto } from './client.dto';
+import { CreateContactDto } from './create-contact.dto';
 
-export class CreateClientDto {
-  @IsString()
-  organization: string;
-
+export class CreateClientDto extends ClientDto {
   @IsOptional()
-  @IsString()
-  subject?: string;
-
-  @IsOptional()
-  @IsEnum(ClientStatus)
-  status?: ClientStatus;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
+  @ValidateNested({ each: true })
+  @Type(() => CreateContactDto)
+  contacts?: CreateContactDto[];
 }
