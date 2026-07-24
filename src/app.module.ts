@@ -23,9 +23,10 @@ import { UsersModule } from './users/users.module';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         url: config.get<string>('DATABASE_URL'),
+        schema: 'public',
         autoLoadEntities: true,
-        // synchronize: config.get('NODE_ENV') === 'local',
-        synchronize: true, // start:local and developed enviroment
+        synchronize: config.get('NODE_ENV') === 'local',
+        // synchronize: true, // start:local and developed enviroment
         ssl:
           config.get('NODE_ENV') !== 'local'
             ? { rejectUnauthorized: false }
