@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,15 +12,20 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'root',
-      database: 'CRM-Galego',
+      url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      synchronize: true, // SOLO desarrollo
+      synchronize: process.env.NODE_ENV === 'local',
+      ssl:
+        process.env.NODE_ENV !== 'local'
+          ? { rejectUnauthorized: false }
+          : false,
     }),
     TasksModule,
     InteractionsModule,
