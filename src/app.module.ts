@@ -24,7 +24,7 @@ import { UsersModule } from './users/users.module';
         type: 'postgres',
         url: config.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
-        synchronize: config.get('NODE_ENV') === 'local',
+        synchronize: true,
         ssl:
           config.get('NODE_ENV') !== 'local'
             ? { rejectUnauthorized: false }
