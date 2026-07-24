@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,15 +17,19 @@ import { UsersModule } from './users/users.module';
       envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
     }),
 
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV === 'local',
-      ssl:
-        process.env.NODE_ENV !== 'local'
-          ? { rejectUnauthorized: false }
-          : false,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        url: config.get<string>('DATABASE_URL'),
+        autoLoadEntities: true,
+        synchronize: config.get('NODE_ENV') === 'local',
+        ssl:
+          config.get('NODE_ENV') !== 'local'
+            ? { rejectUnauthorized: false }
+            : false,
+      }),
     }),
     TasksModule,
     InteractionsModule,

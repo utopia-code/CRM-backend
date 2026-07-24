@@ -5,9 +5,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  console.log('Database URL:', process.env.DATABASE_URL);
-
-  app.setGlobalPrefix('api/');
+  app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
     new ValidationPipe({
