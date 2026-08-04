@@ -51,7 +51,7 @@ export class Interaction {
     enum: CampaignResult,
     default: CampaignResult.UNQUALIFIED,
   })
-  campaingResult: CampaignResult;
+  campaignResult: CampaignResult;
 
   @Column({
     type: 'decimal',
