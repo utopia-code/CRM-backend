@@ -8,6 +8,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ReminderStatus } from '../enums/reminder-status.enum';
 import { ScheduleType } from '../enums/schedule-type.enum';
 
 @Entity()
@@ -36,6 +37,14 @@ export class ScheduleEntry {
   @Index()
   @Column({ type: 'timestamp', nullable: true })
   reminderDate?: Date;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: ReminderStatus,
+    default: ReminderStatus.PENDING,
+  })
+  reminderStatus: ReminderStatus;
 
   @OneToOne(() => Task, (task) => task.scheduleEntry, {
     nullable: true,

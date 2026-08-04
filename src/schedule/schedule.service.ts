@@ -20,6 +20,7 @@ export class ScheduleService {
     return this.scheduleEntryRepo.save(schedule);
   }
 
+  // https://chatgpt.com/s/t_6a6e11b85b088191be3096c1007bf749
   private validateRelations(dto: CreateScheduleEntryDto) {
     switch (dto.type) {
       case ScheduleType.TASK:
