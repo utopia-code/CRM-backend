@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { BackupModule } from './backup/backup.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { ClientModule } from './client/client.module';
 import { InteractionsModule } from './interactions/interactions.module';
@@ -39,6 +40,7 @@ import { UsersModule } from './users/users.module';
     ClientModule,
     CatalogModule,
     ScheduleModule,
+    BackupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
