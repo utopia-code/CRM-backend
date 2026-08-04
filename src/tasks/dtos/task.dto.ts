@@ -1,15 +1,9 @@
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TaskPriority } from '../enums/task-priority.enum';
 import { TaskStatus } from '../enums/task-status.enum';
 
-export class CreateTaskDto {
+export class TaskDto {
   @IsString()
   title: string;
 
@@ -29,14 +23,4 @@ export class CreateTaskDto {
   @IsNumber()
   @Type(() => Number)
   clientId?: number;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  endDate?: Date;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  reminderDate?: Date;
 }

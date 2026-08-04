@@ -1,8 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from 'src/client/entities/client.entity';
-import { Repository } from 'typeorm';
+import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
+import { ReminderStatus } from 'src/schedule/enums/reminder-status.enum';
+import { ScheduleType } from 'src/schedule/enums/schedule-type.enum';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { TaskListDto } from './dtos/task-list.dto';
+import { TaskDto } from './dtos/task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 import { Task } from './entities/task.entity';
 
@@ -14,30 +19,163 @@ export class TasksService {
 
     @InjectRepository(Client)
     private readonly clientRepo: Repository<Client>,
+
+    @InjectRepository(ScheduleEntry)
+    private readonly scheduleEntryRepo: Repository<ScheduleEntry>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
-  async createTask(createTaskDto: CreateTaskDto) {
-    const { clientId, ...taskData } = createTaskDto;
+  private async createTaskEntity(
+    manager: EntityManager,
+    taskData: TaskDto,
+  ): Promise<Task> {
+    const { clientId, ...data } = taskData;
 
     let client: Client | null = null;
 
     if (clientId) {
-      client = await this.clientRepo.findOneBy({ id: createTaskDto.clientId });
-
-      if (!client) {
-        throw new NotFoundException('Cliente no encontrado');
-      }
+      client = await manager.findOneByOrFail(Client, {
+        id: clientId,
+      });
     }
 
-    const task = this.taskRepo.create({
-      ...taskData,
+    const task = manager.create(Task, {
+      ...data,
       client,
     });
 
-    return this.taskRepo.save(task);
+    return manager.save(task);
   }
 
-  async findAllTasks(include?: string) {
+  private async createScheduleEntry(
+    manager: EntityManager,
+    task: Task,
+    endDate?: Date,
+    reminderDate?: Date,
+  ): Promise<ScheduleEntry> {
+    const schedule = manager.create(ScheduleEntry, {
+      type: ScheduleType.TASK,
+      startDate: new Date(),
+      endDate,
+      reminderDate,
+      reminderStatus: ReminderStatus.PENDING,
+      task,
+    });
+
+    return manager.save(schedule);
+  }
+
+  async createTask(createTaskDto: CreateTaskDto) {
+    return this.dataSource.transaction(async (manager) => {
+      const { endDate, reminderDate, ...taskData } = createTaskDto;
+
+      const task = await this.createTaskEntity(manager, taskData);
+
+      if (endDate || reminderDate) {
+        await this.createScheduleEntry(manager, task, endDate, reminderDate);
+      }
+
+      return manager.findOne(Task, {
+        where: {
+          id: task.id,
+        },
+        relations: {
+          client: true,
+          scheduleEntry: true,
+        },
+      });
+    });
+  }
+
+  private async updateTaskEntity(
+    manager: EntityManager,
+    id: number,
+    taskData: Omit<UpdateTaskDto, 'endDate' | 'reminderDate'>,
+  ): Promise<Task> {
+    const { clientId, ...data } = taskData;
+
+    const task = await manager.findOne(Task, {
+      where: { id },
+      relations: {
+        client: true,
+      },
+    });
+
+    if (!task) {
+      throw new NotFoundException('Tarea no encontrada');
+    }
+
+    if (clientId !== undefined) {
+      task.client =
+        clientId === null
+          ? null
+          : await manager.findOneByOrFail(Client, { id: clientId });
+    }
+
+    Object.assign(task, data);
+
+    return manager.save(task);
+  }
+
+  private async updateScheduleEntry(
+    manager: EntityManager,
+    task: Task,
+    endDate?: Date | null,
+    reminderDate?: Date | null,
+  ): Promise<ScheduleEntry> {
+    let scheduleEntry = await manager.findOne(ScheduleEntry, {
+      where: {
+        task: {
+          id: task.id,
+        },
+      },
+    });
+
+    if (!scheduleEntry && !endDate && !reminderDate) {
+      return null;
+    }
+
+    if (!scheduleEntry) {
+      scheduleEntry = manager.create(ScheduleEntry, {
+        type: ScheduleType.TASK,
+        startDate: new Date(),
+        reminderStatus: ReminderStatus.PENDING,
+        task,
+      });
+    }
+
+    if (endDate !== undefined) {
+      scheduleEntry.endDate = endDate;
+    }
+
+    if (reminderDate !== undefined) {
+      scheduleEntry.reminderDate = reminderDate;
+      scheduleEntry.reminderStatus = ReminderStatus.PENDING;
+    }
+
+    return manager.save(scheduleEntry);
+  }
+
+  async updateTask(id: number, updateTaskDto: UpdateTaskDto) {
+    return this.dataSource.transaction(async (manager) => {
+      const { endDate, reminderDate, ...taskData } = updateTaskDto;
+
+      const task = await this.updateTaskEntity(manager, id, taskData);
+
+      await this.updateScheduleEntry(manager, task, endDate, reminderDate);
+
+      return manager.findOne(Task, {
+        where: { id: task.id },
+        relations: {
+          client: true,
+          scheduleEntry: true,
+        },
+      });
+    });
+  }
+
+  async findAll(include?: string) {
     const relations = include ? include.split(',') : [];
 
     return await this.taskRepo.find({
@@ -45,58 +183,70 @@ export class TasksService {
     });
   }
 
-  async findOne(id: number) {
+  async findAllTasks(): Promise<TaskListDto[]> {
+    const tasks = await this.taskRepo
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.client', 'client')
+      .leftJoinAndSelect('task.scheduleEntry', 'scheduleEntry')
+      .select([
+        'task.id',
+        'task.title',
+        'task.status',
+        'task.priority',
+
+        'client.id',
+        'client.organization',
+
+        'scheduleEntry.endDate',
+        'scheduleEntry.reminderDate',
+      ])
+      .orderBy('scheduleEntry.endDate', 'ASC')
+      .getMany();
+
+    //     .skip((page - 1) * limit)
+    //     .take(limit)
+    //     .getManyAndCount();
+
+    return tasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      status: task.status,
+      priority: task.priority,
+
+      client: task.client
+        ? {
+            id: task.client.id,
+            organization: task.client.organization,
+          }
+        : null,
+
+      endDate: task.scheduleEntry?.endDate,
+      reminderDate: task.scheduleEntry?.reminderDate,
+    }));
+  }
+
+  async findOneTask(id: number): Promise<Task> {
     const task = await this.taskRepo.findOne({
       where: { id },
-      relations: ['client', 'events', 'interactions'],
+      relations: {
+        client: true,
+        scheduleEntry: true,
+        interactions: true,
+      },
     });
 
     if (!task) {
-      throw new NotFoundException('Tarefa non encontrada');
+      throw new NotFoundException('Tarea no encontrada');
     }
 
     return task;
   }
 
-  // async findOne(id: number) {
-  //   const task = await this.taskRepo
-  //     .createQueryBuilder('task')
-  //     .leftJoinAndSelect('task.client', 'client')
-  //     .leftJoinAndSelect('task.events', 'events')
-  //     .leftJoinAndSelect('task.interactions', 'interactions')
-  //     .where('task.id = :id', { id })
-  //     .getOne();
+  async removeTask(id: number): Promise<void> {
+    const result = await this.taskRepo.delete(id);
 
-  //   if (!task) {
-  //     throw new NotFoundException('Tarefa non encontrada');
-  //   }
-
-  //   return task;
-  // }
-
-  async updateTask(id: number, updateTaskDto: UpdateTaskDto) {
-    const result = await this.taskRepo.update(id, updateTaskDto);
-
-    if (result.affected === 0) {
+    if (!result.affected) {
       throw new NotFoundException('Tarefa non encontrada');
     }
-
-    return {
-      success: true,
-    };
   }
-
-  async removeTask(id: number) {
-    return await this.taskRepo.delete(id);
-  }
-
-  // async removeTask(id: number) {
-  //   const task = await this.taskRepo.findOneBy({ id });
-
-  //   if (!task) {
-  //     throw new NotFoundException('Tarefa non encontrada');
-  //   }
-
-  //   return await this.taskRepo.softDelete(id);
-  // }
 }

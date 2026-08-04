@@ -22,14 +22,19 @@ export class TasksController {
     return this.taskService.createTask(createTaskDto);
   }
 
+  @Get('list')
+  findAllTasks() {
+    return this.taskService.findAllTasks();
+  }
+
   @Get()
-  findAllTasks(@Query('include') include?: string) {
-    return this.taskService.findAllTasks(include);
+  findAll(@Query('include') include?: string) {
+    return this.taskService.findAll(include);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskService.findOne(+id);
+  findOneTask(@Param('id', ParseIntPipe) id: number) {
+    return this.taskService.findOneTask(id);
   }
 
   @Patch(':id')
