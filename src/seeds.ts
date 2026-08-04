@@ -1,19 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
-
 import { AppModule } from './app.module';
-import { seedClients } from './seeds/client.seed';
+import { runSeed } from './seeds/seed';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
 
   const dataSource = app.get(DataSource);
 
-  await seedClients(dataSource);
+  await runSeed(dataSource);
 
   await app.close();
 
-  console.log('✅ Clientes importados correctamente');
+  console.log('🌱 Seed completado');
 }
 
 bootstrap();
