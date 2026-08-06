@@ -34,7 +34,7 @@ export class TasksController {
 
   @Get(':id')
   findOneTask(@Param('id', ParseIntPipe) id: number) {
-    return this.taskService.findOneTask(id);
+    return this.taskService.findOneTaskDetail(id);
   }
 
   @Patch(':id')

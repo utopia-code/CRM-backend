@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Client } from 'src/client/entities/client.entity';
+import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
 import { Task } from './entities/task.entity';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, Client, ScheduleEntry])],
+  imports: [
+    TypeOrmModule.forFeature([Task, Client, ScheduleEntry, Interaction]),
+  ],
   controllers: [TasksController],
   providers: [TasksService],
 })

@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from 'src/client/entities/client.entity';
+import { Interaction } from 'src/interactions/entities/interaction.entity';
+import { InteractionType } from 'src/interactions/enums/interaction-type.enum';
 import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
 import { ReminderStatus } from 'src/schedule/enums/reminder-status.enum';
 import { ScheduleType } from 'src/schedule/enums/schedule-type.enum';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { TaskDetailDto } from './dtos/task-detail.dto';
 import { TaskListDto } from './dtos/task-list.dto';
 import { TaskDto } from './dtos/task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
@@ -22,6 +25,9 @@ export class TasksService {
 
     @InjectRepository(ScheduleEntry)
     private readonly scheduleEntryRepo: Repository<ScheduleEntry>,
+
+    @InjectRepository(Interaction)
+    private readonly interactionRepo: Repository<Interaction>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -240,6 +246,70 @@ export class TasksService {
     }
 
     return task;
+  }
+
+  async findOneTaskDetail(id: number): Promise<TaskDetailDto> {
+    const task = await this.taskRepo
+      .createQueryBuilder('task')
+      .leftJoin('task.client', 'client')
+      .leftJoin('task.scheduleEntry', 'scheduleEntry')
+      .where('task.id = :id', { id })
+      .select([
+        'task.id',
+        'task.title',
+        'task.description',
+        'task.status',
+        'task.priority',
+
+        'client.organization',
+
+        'scheduleEntry.endDate',
+        'scheduleEntry.reminderDate',
+      ])
+      .getOne();
+
+    if (!task) {
+      throw new NotFoundException('Tarefa non encontrada');
+    }
+
+    const interactions = await this.interactionRepo
+      .createQueryBuilder('interaction')
+      .select('COUNT(interaction.id)', 'total')
+      .addSelect(
+        `
+      SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
+    `,
+        'calls',
+      )
+      .addSelect(
+        `
+      SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
+    `,
+        'emails',
+      )
+      .addSelect(
+        `
+      SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
+    `,
+        'visits',
+      )
+      .where('interaction.taskId = :id', { id })
+      .setParameters({
+        call: InteractionType.CALL,
+        email: InteractionType.EMAIL,
+        visit: InteractionType.MEETING,
+      })
+      .getRawOne();
+
+    return {
+      ...task,
+      interactions: {
+        total: Number(interactions.total),
+        calls: Number(interactions.calls),
+        emails: Number(interactions.emails),
+        meetings: Number(interactions.meetings),
+      },
+    };
   }
 
   async removeTask(id: number): Promise<void> {
