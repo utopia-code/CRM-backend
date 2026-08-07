@@ -22,6 +22,17 @@ export async function seedInteractions(
   const interactions: Interaction[] = [];
 
   for (let i = 0; i < amount; i++) {
+    const client = faker.helpers.arrayElement(clients);
+
+    const clientTasks = tasks.filter((task) => task.client?.id === client.id);
+
+    const task =
+      clientTasks.length > 0
+        ? faker.helpers.maybe(() => faker.helpers.arrayElement(clientTasks), {
+            probability: 0.35,
+          })
+        : undefined;
+
     const interaction = repo.create({
       category: faker.helpers.arrayElement(Object.values(InteractionCategory)),
 
@@ -67,11 +78,9 @@ export async function seedInteractions(
 
       status: faker.helpers.arrayElement(Object.values(ProposalStatus)),
 
-      client: faker.helpers.arrayElement(clients),
+      client,
 
-      task: faker.helpers.maybe(() => faker.helpers.arrayElement(tasks), {
-        probability: 0.35,
-      }),
+      task,
 
       show: faker.helpers.maybe(() => faker.helpers.arrayElement(shows), {
         probability: 0.5,
