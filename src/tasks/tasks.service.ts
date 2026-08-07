@@ -291,7 +291,7 @@ export class TasksService {
         `
       SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
     `,
-        'visits',
+        'meetings',
       )
       .where('interaction.taskId = :id', { id })
       .setParameters({
