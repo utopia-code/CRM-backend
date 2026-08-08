@@ -21,21 +21,21 @@ export class BackupClientDto {
 
   @IsOptional()
   @IsString()
-  subject?: string | null;
+  subject: string | null;
 
   @IsEnum(ClientStatus)
   status: ClientStatus;
 
   @IsOptional()
   @IsString()
-  notes?: string | null;
+  notes: string | null;
 
   @IsDateString()
   createdAt: string;
 
   @IsOptional()
   @IsDateString()
-  deletedAt?: string | null;
+  deletedAt: string | null;
 
   @IsArray()
   @ValidateNested({ each: true })

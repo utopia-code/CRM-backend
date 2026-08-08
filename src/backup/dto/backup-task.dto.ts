@@ -18,7 +18,7 @@ export class BackupTaskDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
+  description: string | null;
 
   @IsEnum(TaskStatus)
   status: TaskStatus;
@@ -31,5 +31,5 @@ export class BackupTaskDto {
 
   @IsOptional()
   @IsInt()
-  clientId?: number | null;
+  clientId: number | null;
 }

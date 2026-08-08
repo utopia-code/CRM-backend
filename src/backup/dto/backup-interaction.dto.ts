@@ -25,18 +25,18 @@ export class BackupInteractionDto {
 
   @IsOptional()
   @IsString()
-  notes?: string;
+  notes: string | null;
 
   @IsOptional()
   @IsInt()
-  duration?: number;
+  duration: number | null;
 
   @IsEnum(CampaignResult)
   campaignResult: CampaignResult;
 
   @IsOptional()
   @IsNumberString()
-  amount?: string;
+  amount: string | null;
 
   @IsEnum(ProposalStatus)
   status: ProposalStatus;
@@ -45,17 +45,13 @@ export class BackupInteractionDto {
 
   @IsOptional()
   @IsInt()
-  clientId?: number | null;
+  clientId: number | null;
 
   @IsOptional()
   @IsInt()
-  taskId?: number | null;
+  taskId: number | null;
 
   @IsOptional()
   @IsInt()
-  scheduleEntryId?: number | null;
-
-  @IsOptional()
-  @IsInt()
-  showId?: number | null;
+  showId: number | null;
 }

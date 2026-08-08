@@ -24,24 +24,24 @@ export class BackupShowDto {
 
   @IsOptional()
   @IsNumber()
-  cost?: number | null;
+  cost: number | null;
 
   @IsOptional()
   @IsString()
-  audience?: string | null;
+  audience: string | null;
 
   @IsOptional()
   @IsString()
-  spaceType?: string | null;
+  spaceType: string | null;
 
   @IsOptional()
   @IsString()
-  description?: string | null;
+  description: string | null;
 
   @IsDateString()
   createdAt: string;
 
   @IsOptional()
   @IsDateString()
-  deletedAt?: string | null;
+  deletedAt: string | null;
 }

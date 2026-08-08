@@ -15,20 +15,20 @@ export class BackupContactDto {
 
   @IsOptional()
   @IsString()
-  role?: string | null;
+  role: string | null;
 
   @IsOptional()
   @IsEmail()
-  email?: string | null;
+  email: string | null;
 
   @IsOptional()
   @IsString()
-  telephone?: string | null;
+  telephone: string | null;
 
   @IsDateString()
   createdAt: string;
 
   @IsOptional()
   @IsDateString()
-  deletedAt?: string | null;
+  deletedAt: string | null;
 }

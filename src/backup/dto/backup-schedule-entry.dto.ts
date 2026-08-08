@@ -18,18 +18,18 @@ export class BackupScheduleEntryDto {
 
   @IsOptional()
   @IsString()
-  title?: string;
+  title: string | null;
 
   @IsDateString()
   startDate: string;
 
   @IsOptional()
   @IsDateString()
-  endDate?: string | null;
+  endDate: string | null;
 
   @IsOptional()
   @IsDateString()
-  reminderDate?: string | null;
+  reminderDate: string | null;
 
   @IsEnum(ReminderStatus)
   reminderStatus: ReminderStatus;
@@ -38,9 +38,9 @@ export class BackupScheduleEntryDto {
 
   @IsOptional()
   @IsInt()
-  taskId?: number | null;
+  taskId: number | null;
 
   @IsOptional()
   @IsInt()
-  interactionId?: number | null;
+  interactionId: number | null;
 }
