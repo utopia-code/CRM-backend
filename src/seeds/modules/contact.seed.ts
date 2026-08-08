@@ -21,9 +21,9 @@ export async function seedContacts(
     for (let i = 0; i < amount; i++) {
       const contact = repo.create({
         name: faker.person.fullName(),
-        role: faker.person.jobTitle(),
-        email: faker.internet.email(),
-        telephone: faker.phone.number(),
+        role: faker.datatype.boolean() ? faker.person.jobTitle() : null,
+        email: faker.datatype.boolean() ? faker.internet.email() : null,
+        telephone: faker.datatype.boolean() ? faker.phone.number() : null,
         client,
       });
 

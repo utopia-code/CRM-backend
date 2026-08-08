@@ -17,13 +17,13 @@ export class Contact {
   name: string;
 
   @Column({ nullable: true })
-  role: string;
+  role: string | null;
 
   @Column({ nullable: true })
-  email: string;
+  email: string | null;
 
   @Column({ nullable: true })
-  telephone: string;
+  telephone: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

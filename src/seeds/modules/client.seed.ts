@@ -31,7 +31,9 @@ export async function seedClients(
       ]),
 
       subject: faker.helpers.arrayElement([
-        '',
+        null,
+        null,
+        null,
         'Programación cultural',
         'Campaña escolar',
         'Festival de verán',
@@ -51,9 +53,10 @@ export async function seedClients(
       //     : null,
 
       notes: faker.helpers.arrayElement([
-        '',
-        '',
-        '',
+        null,
+        null,
+        null,
+        null,
         'Solicita presupuesto para verano.',
         'Prefiere contacto por correo.',
         'Ya contrató en 2025.',

@@ -6,13 +6,13 @@ export class CreateContactDto {
 
   @IsOptional()
   @IsString()
-  role?: string;
+  role?: string | null;
 
   @IsOptional()
   @IsEmail()
-  email?: string;
+  email?: string | null;
 
   @IsOptional()
   @IsString()
-  telephone?: string;
+  telephone?: string | null;
 }

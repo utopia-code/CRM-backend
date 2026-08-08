@@ -21,14 +21,14 @@ export class BackupClientDto {
 
   @IsOptional()
   @IsString()
-  subject?: string;
+  subject?: string | null;
 
   @IsEnum(ClientStatus)
   status: ClientStatus;
 
   @IsOptional()
   @IsString()
-  notes?: string;
+  notes?: string | null;
 
   @IsDateString()
   createdAt: string;

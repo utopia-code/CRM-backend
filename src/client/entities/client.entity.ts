@@ -20,7 +20,7 @@ export class Client {
   organization: string;
 
   @Column({ nullable: true })
-  subject: string;
+  subject: string | null;
 
   @Column({
     type: 'enum',
@@ -30,7 +30,7 @@ export class Client {
   status: ClientStatus;
 
   @Column({ type: 'text', nullable: true })
-  notes: string;
+  notes: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

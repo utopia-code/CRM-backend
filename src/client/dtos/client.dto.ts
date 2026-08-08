@@ -7,7 +7,7 @@ export class ClientDto {
 
   @IsOptional()
   @IsString()
-  subject?: string;
+  subject?: string | null;
 
   @IsOptional()
   @IsEnum(ClientStatus)
@@ -15,5 +15,5 @@ export class ClientDto {
 
   @IsOptional()
   @IsString()
-  notes?: string;
+  notes?: string | null;
 }

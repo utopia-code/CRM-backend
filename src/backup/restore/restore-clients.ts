@@ -1,6 +1,5 @@
 import { Client } from 'src/client/entities/client.entity';
 import { Contact } from 'src/client/entities/contact.entity';
-import { ClientStatus } from 'src/client/enums/client-status.enum';
 import { EntityManager } from 'typeorm';
 import { BackupClientDto } from '../dto/backup-client.dto';
 
@@ -16,7 +15,7 @@ export async function restoreClients(
       id: client.id,
       organization: client.organization,
       subject: client.subject ?? null,
-      status: client.status as ClientStatus,
+      status: client.status,
       notes: client.notes ?? null,
       createdAt: new Date(client.createdAt),
       deletedAt: client.deletedAt ? new Date(client.deletedAt) : null,
