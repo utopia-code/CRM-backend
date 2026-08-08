@@ -28,10 +28,10 @@ export async function seedInteractions(
 
     const task =
       clientTasks.length > 0
-        ? faker.helpers.maybe(() => faker.helpers.arrayElement(clientTasks), {
+        ? (faker.helpers.maybe(() => faker.helpers.arrayElement(clientTasks), {
             probability: 0.35,
-          })
-        : undefined;
+          }) ?? null)
+        : null;
 
     const interaction = repo.create({
       category: faker.helpers.arrayElement(Object.values(InteractionCategory)),
@@ -70,11 +70,16 @@ export async function seedInteractions(
 
       campaignResult: faker.helpers.arrayElement(Object.values(CampaignResult)),
 
-      amount: faker.number.float({
-        min: 500,
-        max: 6000,
-        fractionDigits: 2,
-      }),
+      amount:
+        faker.helpers.maybe(
+          () =>
+            faker.number.float({
+              min: 500,
+              max: 6000,
+              fractionDigits: 2,
+            }),
+          { probability: 0.7 },
+        ) ?? null,
 
       status: faker.helpers.arrayElement(Object.values(ProposalStatus)),
 
@@ -82,9 +87,10 @@ export async function seedInteractions(
 
       task,
 
-      show: faker.helpers.maybe(() => faker.helpers.arrayElement(shows), {
-        probability: 0.5,
-      }),
+      show:
+        faker.helpers.maybe(() => faker.helpers.arrayElement(shows), {
+          probability: 0.5,
+        }) ?? null,
     });
 
     interactions.push(await repo.save(interaction));

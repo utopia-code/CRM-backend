@@ -173,6 +173,8 @@ export async function seedSchedule(
       reminderStatus: hasReminder
         ? ReminderStatus.PENDING
         : ReminderStatus.COMPLETED,
+      task: null,
+      interaction: null,
     });
 
     schedules.push(await repo.save(schedule));

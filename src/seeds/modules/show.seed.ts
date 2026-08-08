@@ -19,11 +19,36 @@ export async function seedShows(
       name: faker.music.songName(),
       company: faker.company.name(),
       duration: faker.number.int({ min: 45, max: 120 }),
-      price: faker.number.int({ min: 800, max: 6000 }),
-      cost: faker.number.int({ min: 400, max: 4000 }),
-      audience: faker.helpers.arrayElement(audiences),
-      spaceType: faker.helpers.arrayElement(spaces),
-      description: faker.lorem.sentences(2),
+      price: faker.number.float({
+        min: 800,
+        max: 6000,
+        fractionDigits: 2,
+      }),
+      cost:
+        faker.helpers.maybe(
+          () =>
+            faker.number.float({
+              min: 400,
+              max: 4000,
+              fractionDigits: 2,
+            }),
+          { probability: 0.8 },
+        ) ?? null,
+
+      audience:
+        faker.helpers.maybe(() => faker.helpers.arrayElement(audiences), {
+          probability: 0.9,
+        }) ?? null,
+
+      spaceType:
+        faker.helpers.maybe(() => faker.helpers.arrayElement(spaces), {
+          probability: 0.9,
+        }) ?? null,
+
+      description:
+        faker.helpers.maybe(() => faker.lorem.sentences(2), {
+          probability: 0.8,
+        }) ?? null,
     });
 
     shows.push(await repo.save(show));

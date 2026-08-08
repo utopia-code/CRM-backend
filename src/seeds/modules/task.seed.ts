@@ -35,15 +35,16 @@ export async function seedTasks(
 
       //   description: faker.lorem.sentences(2),
 
-      description: faker.helpers.arrayElement([
-        '',
-        'Pendiente de respuesta.',
-        'Enviar esta semana.',
-        'Esperando confirmación.',
-        'Hablar con producción.',
-        'Consultar disponibilidad.',
-        'Confirmar presupuesto.',
-      ]),
+      description: faker.datatype.boolean()
+        ? faker.helpers.arrayElement([
+            'Pendiente de respuesta.',
+            'Enviar esta semana.',
+            'Esperando confirmación.',
+            'Hablar con producción.',
+            'Consultar disponibilidad.',
+            'Confirmar presupuesto.',
+          ])
+        : null,
 
       status: faker.helpers.arrayElement(Object.values(TaskStatus)),
 
