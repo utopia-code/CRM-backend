@@ -19,21 +19,25 @@ export async function restoreInteractions(
       category: interaction.category,
       type: interaction.type,
       subject: interaction.subject,
-      notes: interaction.notes ?? null,
-      duration: interaction.duration ?? null,
+      notes: interaction.notes,
+      duration: interaction.duration,
       campaignResult: interaction.campaignResult,
-      amount:
-        interaction.amount !== null && interaction.amount !== undefined
-          ? Number(interaction.amount)
-          : null,
+      amount: interaction.amount != null ? Number(interaction.amount) : null,
       status: interaction.status,
-      client: interaction.clientId
-        ? ({ id: interaction.clientId } as Client)
-        : null,
+      client:
+        interaction.clientId != null
+          ? ({ id: interaction.clientId } as Client)
+          : null,
 
-      task: interaction.taskId ? ({ id: interaction.taskId } as Task) : null,
+      task:
+        interaction.taskId != null
+          ? ({ id: interaction.taskId } as Task)
+          : null,
 
-      show: interaction.showId ? ({ id: interaction.showId } as Show) : null,
+      show:
+        interaction.showId != null
+          ? ({ id: interaction.showId } as Show)
+          : null,
     }),
   );
 

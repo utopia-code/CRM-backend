@@ -2,8 +2,6 @@ import { EntityManager } from 'typeorm';
 
 import { Client } from 'src/client/entities/client.entity';
 import { Task } from 'src/tasks/entities/task.entity';
-import { TaskPriority } from 'src/tasks/enums/task-priority.enum';
-import { TaskStatus } from 'src/tasks/enums/task-status.enum';
 
 import { BackupTaskDto } from '../dto/backup-task.dto';
 
@@ -17,11 +15,11 @@ export async function restoreTasks(
     taskRepository.create({
       id: task.id,
       title: task.title,
-      description: task.description ?? null,
-      status: task.status as TaskStatus,
-      priority: task.priority as TaskPriority,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
       createdAt: new Date(task.createdAt),
-      client: task.clientId ? ({ id: task.clientId } as Client) : null,
+      client: task.clientId != null ? ({ id: task.clientId } as Client) : null,
     }),
   );
 

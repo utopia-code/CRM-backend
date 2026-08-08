@@ -16,15 +16,17 @@ export async function restoreScheduleEntries(
     scheduleRepository.create({
       id: entry.id,
       type: entry.type,
-      title: entry.title ?? null,
+      title: entry.title,
       startDate: new Date(entry.startDate),
-      endDate: entry.endDate ? new Date(entry.endDate) : null,
-      reminderDate: entry.reminderDate ? new Date(entry.reminderDate) : null,
+      endDate: entry.endDate != null ? new Date(entry.endDate) : null,
+      reminderDate:
+        entry.reminderDate != null ? new Date(entry.reminderDate) : null,
       reminderStatus: entry.reminderStatus,
-      task: entry.taskId ? ({ id: entry.taskId } as Task) : null,
-      interaction: entry.interactionId
-        ? ({ id: entry.interactionId } as Interaction)
-        : null,
+      task: entry.taskId != null ? ({ id: entry.taskId } as Task) : null,
+      interaction:
+        entry.interactionId != null
+          ? ({ id: entry.interactionId } as Interaction)
+          : null,
     }),
   );
 

@@ -17,12 +17,12 @@ export async function restoreShows(
       company: show.company,
       duration: show.duration,
       price: show.price,
-      cost: show.cost ?? null,
-      audience: show.audience ?? null,
-      spaceType: show.spaceType ?? null,
-      description: show.description ?? null,
+      cost: show.cost,
+      audience: show.audience,
+      spaceType: show.spaceType,
+      description: show.description,
       createdAt: new Date(show.createdAt),
-      deletedAt: show.deletedAt ? new Date(show.deletedAt) : null,
+      deletedAt: show.deletedAt != null ? new Date(show.deletedAt) : null,
     }),
   );
 

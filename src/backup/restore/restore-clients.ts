@@ -14,11 +14,11 @@ export async function restoreClients(
     clientRepository.create({
       id: client.id,
       organization: client.organization,
-      subject: client.subject ?? null,
+      subject: client.subject,
       status: client.status,
-      notes: client.notes ?? null,
+      notes: client.notes,
       createdAt: new Date(client.createdAt),
-      deletedAt: client.deletedAt ? new Date(client.deletedAt) : null,
+      deletedAt: client.deletedAt != null ? new Date(client.deletedAt) : null,
     }),
   );
 
@@ -29,11 +29,12 @@ export async function restoreClients(
       contactRepository.create({
         id: contact.id,
         name: contact.name,
-        role: contact.role ?? null,
-        email: contact.email ?? null,
-        telephone: contact.telephone ?? null,
+        role: contact.role,
+        email: contact.email,
+        telephone: contact.telephone,
         createdAt: new Date(contact.createdAt),
-        deletedAt: contact.deletedAt ? new Date(contact.deletedAt) : null,
+        deletedAt:
+          contact.deletedAt != null ? new Date(contact.deletedAt) : null,
 
         client: { id: client.id } as Client,
       }),
