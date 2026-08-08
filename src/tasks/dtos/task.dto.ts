@@ -9,7 +9,7 @@ export class TaskDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
+  description?: string | null;
 
   @IsOptional()
   @IsEnum(TaskStatus)
@@ -22,5 +22,5 @@ export class TaskDto {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  clientId?: number;
+  clientId?: number | null;
 }

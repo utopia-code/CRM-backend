@@ -40,7 +40,7 @@ export class TasksService {
 
     let client: Client | null = null;
 
-    if (clientId) {
+    if (clientId !== undefined && clientId !== null) {
       client = await manager.findOneByOrFail(Client, {
         id: clientId,
       });
@@ -226,8 +226,8 @@ export class TasksService {
           }
         : null,
 
-      endDate: task.scheduleEntry?.endDate,
-      reminderDate: task.scheduleEntry?.reminderDate,
+      endDate: task.scheduleEntry?.endDate ?? null,
+      reminderDate: task.scheduleEntry?.reminderDate ?? null,
     }));
   }
 
@@ -261,8 +261,10 @@ export class TasksService {
         'task.status',
         'task.priority',
 
+        'client.id',
         'client.organization',
 
+        'scheduleEntry.id',
         'scheduleEntry.endDate',
         'scheduleEntry.reminderDate',
       ])
@@ -272,43 +274,67 @@ export class TasksService {
       throw new NotFoundException('Tarefa non encontrada');
     }
 
-    const interactions = await this.interactionRepo
-      .createQueryBuilder('interaction')
-      .select('COUNT(interaction.id)', 'total')
-      .addSelect(
-        `
+    let interactions = null;
+
+    if (task.client) {
+      interactions = await this.interactionRepo
+        .createQueryBuilder('interaction')
+        .select('COUNT(interaction.id)', 'total')
+        .addSelect(
+          `
       SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
     `,
-        'calls',
-      )
-      .addSelect(
-        `
+          'calls',
+        )
+        .addSelect(
+          `
       SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
     `,
-        'emails',
-      )
-      .addSelect(
-        `
+          'emails',
+        )
+        .addSelect(
+          `
       SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
     `,
-        'meetings',
-      )
-      .where('interaction.taskId = :id', { id })
-      .setParameters({
-        call: InteractionType.CALL,
-        email: InteractionType.EMAIL,
-        visit: InteractionType.MEETING,
-      })
-      .getRawOne();
+          'meetings',
+        )
+        .where('interaction.taskId = :id', { id })
+        .setParameters({
+          call: InteractionType.CALL,
+          email: InteractionType.EMAIL,
+          visit: InteractionType.MEETING,
+        })
+        .getRawOne();
+    }
 
     return {
-      ...task,
-      interactions: {
-        total: Number(interactions.total),
-        calls: Number(interactions.calls),
-        emails: Number(interactions.emails),
-        meetings: Number(interactions.meetings),
-      },
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+
+      client: task.client
+        ? {
+            organization: task.client.organization,
+          }
+        : null,
+
+      scheduleEntry: task.scheduleEntry
+        ? {
+            endDate: task.scheduleEntry.endDate ?? null,
+            reminderDate: task.scheduleEntry.reminderDate ?? null,
+          }
+        : null,
+
+      interactions: interactions
+        ? {
+            total: Number(interactions.total),
+            calls: Number(interactions.calls),
+            emails: Number(interactions.emails),
+            meetings: Number(interactions.meetings),
+          }
+        : null,
     };
   }
 

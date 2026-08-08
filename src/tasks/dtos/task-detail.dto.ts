@@ -4,20 +4,20 @@ import { TaskStatus } from '../enums/task-status.enum';
 export class TaskDetailDto {
   id: number;
   title: string;
-  description?: string;
-  status?: TaskStatus;
-  priority?: TaskPriority;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
 
-  client?: {
+  client: {
     organization: string;
   } | null;
 
-  schedule?: {
-    endDate?: Date;
-    reminderDate?: Date;
+  scheduleEntry: {
+    endDate: Date | null;
+    reminderDate: Date | null;
   } | null;
 
-  interactions?: {
+  interactions: {
     total: number;
     calls: number;
     emails: number;

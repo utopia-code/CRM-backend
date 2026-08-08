@@ -15,7 +15,7 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
+  description?: string | null;
 
   @IsOptional()
   @IsEnum(TaskStatus)
@@ -28,15 +28,15 @@ export class CreateTaskDto {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  clientId?: number;
+  clientId?: number | null;
 
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  endDate?: Date;
+  endDate?: Date | null;
 
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  reminderDate?: Date;
+  reminderDate?: Date | null;
 }

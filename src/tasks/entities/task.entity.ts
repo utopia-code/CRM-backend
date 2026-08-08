@@ -23,7 +23,7 @@ export class Task {
   title: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description: string | null;
 
   @Index()
   @Column({
@@ -51,15 +51,11 @@ export class Task {
     onDelete: 'SET NULL',
     nullable: true,
   })
-  client?: Client;
+  client?: Client | null;
 
-  @OneToOne(() => ScheduleEntry, (scheduleEntry) => scheduleEntry.task, {
-    nullable: true,
-  })
-  scheduleEntry?: ScheduleEntry;
+  @OneToOne(() => ScheduleEntry, (scheduleEntry) => scheduleEntry.task)
+  scheduleEntry: ScheduleEntry | null;
 
-  @OneToMany(() => Interaction, (interaction) => interaction.task, {
-    nullable: true,
-  })
-  interactions?: Interaction[];
+  @OneToMany(() => Interaction, (interaction) => interaction.task)
+  interactions: Interaction[];
 }
