@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { ClientListDto } from './dtos/client-list.dto';
+import { ClientNameDto } from './dtos/client-name.dto';
 import { CreateClientDto } from './dtos/create-client.dto';
 import { UpdateClientDto } from './dtos/update-client.dto';
 import { Client } from './entities/client.entity';
@@ -82,6 +83,18 @@ export class ClientService {
       })),
       interactionsCount: client.interactionsCount ?? 0,
       tasksCount: client.tasksCount ?? 0,
+    }));
+  }
+
+  async findListOfOrganizations(): Promise<ClientNameDto[]> {
+    const clients = await this.clientRepo
+      .createQueryBuilder('client')
+      .select(['client.id', 'client.organization'])
+      .getMany();
+
+    return clients.map((client) => ({
+      id: client.id,
+      organization: client.organization,
     }));
   }
 

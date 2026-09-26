@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { ClientListDto } from './dtos/client-list.dto';
+import { ClientNameDto } from './dtos/client-name.dto';
 import { CreateClientDto } from './dtos/create-client.dto';
 import { UpdateClientDto } from './dtos/update-client.dto';
 
@@ -25,6 +26,11 @@ export class ClientController {
 
   @Get('list')
   findListOfClients(): Promise<ClientListDto[]> {
+    return this.clientService.findLClientsList();
+  }
+
+  @Get('organization-list')
+  findListOfOrganizations(): Promise<ClientNameDto[]> {
     return this.clientService.findLClientsList();
   }
 
