@@ -7,12 +7,14 @@ import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
 import { ReminderStatus } from 'src/schedule/enums/reminder-status.enum';
 import { ScheduleType } from 'src/schedule/enums/schedule-type.enum';
 import { DataSource, EntityManager, Repository } from 'typeorm';
+import { ClientTaskDto } from './dtos/client-task.dto';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { TaskDetailDto } from './dtos/task-detail.dto';
 import { TaskListDto } from './dtos/task-list.dto';
 import { TaskDto } from './dtos/task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 import { Task } from './entities/task.entity';
+import { TaskStatus } from './enums/task-status.enum';
 
 @Injectable()
 export class TasksService {
@@ -63,8 +65,8 @@ export class TasksService {
     const schedule = manager.create(ScheduleEntry, {
       type: ScheduleType.TASK,
       startDate: new Date(),
-      endDate,
-      reminderDate,
+      endDate: endDate ?? null,
+      reminderDate: reminderDate ?? null,
       reminderStatus: ReminderStatus.PENDING,
       task,
     });
@@ -78,7 +80,7 @@ export class TasksService {
 
       const task = await this.createTaskEntity(manager, taskData);
 
-      if (endDate || reminderDate) {
+      if (endDate !== undefined || reminderDate !== undefined) {
         await this.createScheduleEntry(manager, task, endDate, reminderDate);
       }
 
@@ -129,7 +131,7 @@ export class TasksService {
     task: Task,
     endDate?: Date | null,
     reminderDate?: Date | null,
-  ): Promise<ScheduleEntry> {
+  ): Promise<ScheduleEntry | null> {
     let scheduleEntry = await manager.findOne(ScheduleEntry, {
       where: {
         task: {
@@ -251,8 +253,8 @@ export class TasksService {
   async findOneTaskDetail(id: number): Promise<TaskDetailDto> {
     const task = await this.taskRepo
       .createQueryBuilder('task')
-      .leftJoin('task.client', 'client')
-      .leftJoin('task.scheduleEntry', 'scheduleEntry')
+      .leftJoinAndSelect('task.client', 'client')
+      .leftJoinAndSelect('task.scheduleEntry', 'scheduleEntry')
       .where('task.id = :id', { id })
       .select([
         'task.id',
@@ -338,11 +340,74 @@ export class TasksService {
     };
   }
 
+  async findTasksByClient(clientId: number): Promise<ClientTaskDto[]> {
+    const tasks = await this.taskRepo
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.client', 'client')
+      .leftJoinAndSelect('task.scheduleEntry', 'scheduleEntry')
+      .where('task.clientId = :clientId', { clientId })
+      .select([
+        'task.id',
+        'task.title',
+        'task.description',
+        'task.status',
+        'task.priority',
+
+        'client.id',
+        'client.organization',
+
+        'scheduleEntry.id',
+        'scheduleEntry.endDate',
+        'scheduleEntry.reminderDate',
+      ])
+      .orderBy('task.id', 'DESC')
+      .getMany();
+
+    return tasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+
+      client: task.client
+        ? {
+            organization: task.client.organization,
+          }
+        : null,
+
+      scheduleEntry: task.scheduleEntry
+        ? {
+            endDate: task.scheduleEntry.endDate ?? null,
+            reminderDate: task.scheduleEntry.reminderDate ?? null,
+          }
+        : null,
+    }));
+  }
+
   async removeTask(id: number): Promise<void> {
     const result = await this.taskRepo.delete(id);
 
     if (!result.affected) {
       throw new NotFoundException('Tarefa non encontrada');
     }
+  }
+
+  async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
+    const task = await this.taskRepo.findOne({
+      where: { id },
+      relations: {
+        client: true,
+        scheduleEntry: true,
+      },
+    });
+
+    if (!task) {
+      throw new NotFoundException('Tarefa non encontrada');
+    }
+
+    task.status = status;
+
+    return this.taskRepo.save(task);
   }
 }
