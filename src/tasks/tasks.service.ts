@@ -199,6 +199,7 @@ export class TasksService {
       .select([
         'task.id',
         'task.title',
+        'task.description',
         'task.status',
         'task.priority',
 
@@ -218,6 +219,7 @@ export class TasksService {
     return tasks.map((task) => ({
       id: task.id,
       title: task.title,
+      description: task.description,
       status: task.status,
       priority: task.priority,
 
@@ -284,20 +286,20 @@ export class TasksService {
         .select('COUNT(interaction.id)', 'total')
         .addSelect(
           `
-      SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
-    `,
+          SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
+        `,
           'calls',
         )
         .addSelect(
           `
-      SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
-    `,
+          SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
+        `,
           'emails',
         )
         .addSelect(
           `
-      SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
-    `,
+          SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
+        `,
           'meetings',
         )
         .where('interaction.taskId = :id', { id })

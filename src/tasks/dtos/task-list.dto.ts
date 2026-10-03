@@ -4,6 +4,7 @@ import { TaskStatus } from '../enums/task-status.enum';
 export class TaskListDto {
   id: number;
   title: string;
+  description: string;
   status: TaskStatus;
   priority: TaskPriority;
   client: {
