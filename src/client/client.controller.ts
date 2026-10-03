@@ -41,7 +41,7 @@ export class ClientController {
 
   @Get(':id')
   getClient(@Param('id', ParseIntPipe) id: number) {
-    return this.clientService.getClient(id);
+    return this.clientService.getClientData(id);
   }
 
   @Patch(':id')

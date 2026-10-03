@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Interaction } from 'src/interactions/entities/interaction.entity';
+import { InteractionType } from 'src/interactions/enums/interaction-type.enum';
+import { Task } from 'src/tasks/entities/task.entity';
+import { TaskStatus } from 'src/tasks/enums/task-status.enum';
 import { DataSource, Repository } from 'typeorm';
+import { ClientDetailDto } from './dtos/client-detail.dto';
 import { ClientListDto } from './dtos/client-list.dto';
 import { ClientNameDto } from './dtos/client-name.dto';
 import { CreateClientDto } from './dtos/create-client.dto';
@@ -16,6 +21,12 @@ export class ClientService {
 
     @InjectRepository(Contact)
     private readonly contactRepo: Repository<Contact>,
+
+    @InjectRepository(Interaction)
+    private readonly interactionRepo: Repository<Interaction>,
+
+    @InjectRepository(Task)
+    private readonly tasksRepo: Repository<Task>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -138,6 +149,90 @@ export class ClientService {
     }
 
     return client;
+  }
+
+  async getClientData(id: number): Promise<ClientDetailDto> {
+    const client = await this.clientRepo.findOne({
+      where: { id },
+      relations: {
+        contacts: true,
+      },
+    });
+
+    if (!client) {
+      throw new NotFoundException('Cliente no encontrado');
+    }
+
+    const interactions = await this.interactionRepo
+      .createQueryBuilder('interaction')
+      .select('COUNT(interaction.id)', 'total')
+      .addSelect(
+        `
+                SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
+              `,
+        'calls',
+      )
+      .addSelect(
+        `
+                SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
+              `,
+        'emails',
+      )
+      .addSelect(
+        `
+                SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
+              `,
+        'meetings',
+      )
+      .where('interaction.clientId = :id', { id })
+      .setParameters({
+        call: InteractionType.CALL,
+        email: InteractionType.EMAIL,
+        visit: InteractionType.MEETING,
+      })
+      .getRawOne();
+
+    const tasks = await this.tasksRepo
+      .createQueryBuilder('task')
+      .select(
+        `
+        SUM(CASE WHEN task.status = :done THEN 1 ELSE 0 END)
+      `,
+        'completedTasks',
+      )
+      .addSelect(
+        `
+        SUM(CASE WHEN task.status != :done THEN 1 ELSE 0 END)
+      `,
+        'pendingTasks',
+      )
+      .where('task.clientId = :clientId', { clientId: id })
+      .setParameter('done', TaskStatus.DONE)
+      .getRawOne();
+
+    return {
+      id: client.id,
+      organization: client.organization,
+      subject: client.subject ?? null,
+      notes: client.notes,
+      status: client.status,
+
+      contacts: client.contacts.map((contact) => ({
+        id: contact.id,
+        name: contact.name,
+        role: contact.role ?? null,
+        email: contact.email ?? null,
+        telephone: contact.telephone ?? null,
+      })),
+
+      summary: {
+        calls: Number(interactions?.calls ?? 0),
+        emails: Number(interactions?.emails ?? 0),
+        meetings: Number(interactions?.visits ?? 0),
+        completedTasks: Number(tasks?.completedTasks ?? 0),
+        pendingTasks: Number(tasks?.pendingTasks ?? 0),
+      },
+    };
   }
 
   async updateClient(id: number, updateClientDto: UpdateClientDto) {
