@@ -81,7 +81,7 @@ export async function seedInteractions(
           { probability: 0.7 },
         ) ?? null,
 
-      status: faker.helpers.arrayElement(Object.values(ProposalStatus)),
+      proposalStatus: faker.helpers.arrayElement(Object.values(ProposalStatus)),
 
       client,
 

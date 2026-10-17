@@ -23,7 +23,7 @@ export async function restoreInteractions(
       duration: interaction.duration,
       campaignResult: interaction.campaignResult,
       amount: interaction.amount != null ? Number(interaction.amount) : null,
-      status: interaction.status,
+      proposalStatus: interaction.proposalStatus,
       client:
         interaction.clientId != null
           ? ({ id: interaction.clientId } as Client)

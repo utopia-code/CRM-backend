@@ -118,7 +118,7 @@ export class ExportService {
             interaction.amount !== null && interaction.amount !== undefined
               ? interaction.amount.toString()
               : null,
-          status: interaction.status,
+          proposalStatus: interaction.proposalStatus,
           clientId: interaction.client ? interaction.client.id : null,
           taskId: interaction.task ? interaction.task.id : null,
           scheduleEntryId: interaction.scheduleEntry

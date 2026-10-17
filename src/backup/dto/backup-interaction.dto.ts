@@ -39,7 +39,7 @@ export class BackupInteractionDto {
   amount: string | null;
 
   @IsEnum(ProposalStatus)
-  status: ProposalStatus;
+  proposalStatus: ProposalStatus;
 
   // RELATIONSHIPS
 
