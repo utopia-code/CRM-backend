@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BackupModule } from './backup/backup.module';
+import { CampaignsModule } from './campaigns/campaigns.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { ClientModule } from './client/client.module';
 import { InteractionsModule } from './interactions/interactions.module';
@@ -41,6 +42,7 @@ import { UsersModule } from './users/users.module';
     CatalogModule,
     ScheduleModule,
     BackupModule,
+    CampaignsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
