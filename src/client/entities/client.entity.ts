@@ -1,3 +1,4 @@
+import { CampaignClient } from 'src/interactions/entities/campaign-client.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import {
@@ -48,6 +49,9 @@ export class Client {
 
   @OneToMany(() => Interaction, (interaction) => interaction.client)
   interactions: Interaction[];
+
+  @OneToMany(() => CampaignClient, (campaignClient) => campaignClient.client)
+  campaignClients: CampaignClient[];
 
   interactionsCount?: number;
 

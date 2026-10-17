@@ -15,6 +15,7 @@ import { CampaignResult } from '../enums/campaign-result';
 import { InteractionCategory } from '../enums/interaction-category.enum';
 import { InteractionType } from '../enums/interaction-type.enum';
 import { ProposalStatus } from '../enums/proposal-status.enum';
+import { CampaignClient } from './campaign-client.entity';
 
 @Entity()
 export class Interaction {
@@ -51,7 +52,7 @@ export class Interaction {
     enum: CampaignResult,
     default: CampaignResult.UNQUALIFIED,
   })
-  campaignResult: CampaignResult;
+  campaignResult?: CampaignResult;
 
   @Column({
     type: 'decimal',
@@ -66,7 +67,7 @@ export class Interaction {
     enum: ProposalStatus,
     default: ProposalStatus.OPEN,
   })
-  status: ProposalStatus;
+  proposalStatus?: ProposalStatus;
 
   // RELATIONSHIP
 
@@ -76,6 +77,17 @@ export class Interaction {
     nullable: true,
   })
   client?: Client;
+
+  @ManyToOne(
+    () => CampaignClient,
+    (campaignClient) => campaignClient.interactions,
+    {
+      nullable: true,
+      onDelete: 'SET NULL',
+    },
+  )
+  @JoinColumn({ name: 'campaign_client_id' })
+  campaignClient?: CampaignClient | null;
 
   @Index()
   @ManyToOne(() => Task, (task) => task.interactions, {
