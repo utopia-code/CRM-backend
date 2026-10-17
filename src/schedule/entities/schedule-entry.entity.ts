@@ -1,3 +1,4 @@
+import { Campaign } from 'src/campaigns/entities/campaign.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import {
@@ -59,4 +60,11 @@ export class ScheduleEntry {
   })
   @JoinColumn()
   interaction?: Interaction;
+
+  @OneToOne(() => Campaign, (campaign) => campaign.scheduleEntry, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  campaign?: Campaign;
 }
