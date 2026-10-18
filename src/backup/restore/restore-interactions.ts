@@ -5,6 +5,7 @@ import { Client } from 'src/client/entities/client.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 
+import { CampaignClient } from 'src/campaigns/entities/campaign-client.entity';
 import { BackupInteractionDto } from '../dto/backup-interaction.dto';
 
 export async function restoreInteractions(
@@ -37,6 +38,11 @@ export async function restoreInteractions(
       show:
         interaction.showId != null
           ? ({ id: interaction.showId } as Show)
+          : null,
+
+      campaignClient:
+        interaction.campaignClientId != null
+          ? ({ id: interaction.campaignClientId } as CampaignClient)
           : null,
     }),
   );

@@ -4,6 +4,7 @@ import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 
+import { Campaign } from 'src/campaigns/entities/campaign.entity';
 import { BackupScheduleEntryDto } from '../dto/backup-schedule-entry.dto';
 
 export async function restoreScheduleEntries(
@@ -26,6 +27,10 @@ export async function restoreScheduleEntries(
       interaction:
         entry.interactionId != null
           ? ({ id: entry.interactionId } as Interaction)
+          : null,
+      campaign:
+        entry.campaignId != null
+          ? ({ id: entry.campaignId } as Campaign)
           : null,
     }),
   );

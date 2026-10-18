@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { BackupDto } from '../dto/backup.dto';
+import { restoreCampaigns } from './restore-campaign';
+import { restoreCampaignClients } from './restore-campaign-client';
 import { restoreClients } from './restore-clients';
 import { restoreInteractions } from './restore-interactions';
 import { restoreScheduleEntries } from './restore-schedule';
@@ -20,6 +22,8 @@ export class RestoreService {
       await restoreClients(manager, backup.data.clients);
       await restoreShows(manager, backup.data.shows);
       await restoreTasks(manager, backup.data.tasks);
+      await restoreCampaigns(manager, backup.data.campaigns);
+      await restoreCampaignClients(manager, backup.data.campaignClients);
       await restoreInteractions(manager, backup.data.interactions);
       await restoreScheduleEntries(manager, backup.data.scheduleEntries);
 
@@ -56,6 +60,16 @@ export class RestoreService {
       throw new BadRequestException('El backup de tareas no es válido');
     }
 
+    if (!Array.isArray(backup.data.campaigns)) {
+      throw new BadRequestException('El backup de campañas no es válido');
+    }
+
+    if (!Array.isArray(backup.data.campaignClients)) {
+      throw new BadRequestException(
+        'El backup de asociaciones de campañas no es válido',
+      );
+    }
+
     if (!Array.isArray(backup.data.interactions)) {
       throw new BadRequestException('El backup de interacciones no es válido');
     }
@@ -70,6 +84,8 @@ export class RestoreService {
     TRUNCATE TABLE
       schedule_entry,
       interaction,
+      campaign_client,
+      campaign,
       task,
       contact,
       client,
