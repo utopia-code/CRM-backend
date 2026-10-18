@@ -28,6 +28,7 @@ import { UsersModule } from './users/users.module';
         schema: 'public',
         autoLoadEntities: true,
         synchronize: config.get('NODE_ENV') === 'local',
+        // synchronize: false, // activar para migraciones
         // synchronize: true, // start:local and developed enviroment
         ssl:
           config.get('NODE_ENV') !== 'local'
