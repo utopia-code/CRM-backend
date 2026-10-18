@@ -22,10 +22,17 @@ export class Show {
   @Column()
   duration: number;
 
-  @Column()
+  @Column('numeric', {
+    precision: 10,
+    scale: 2,
+  })
   price: number;
 
-  @Column({ nullable: true })
+  @Column('numeric', {
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   cost: number;
 
   @Column({ nullable: true })
