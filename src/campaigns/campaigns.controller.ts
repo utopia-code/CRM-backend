@@ -4,10 +4,12 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
 import { CampaignsService } from './campaigns.service';
+import { AddCampaignClientDto } from './dto/add-campaign-client-dto';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 
@@ -16,30 +18,38 @@ export class CampaignsController {
   constructor(private readonly campaignsService: CampaignsService) {}
 
   @Post()
-  create(@Body() createCampaignDto: CreateCampaignDto) {
+  createCampaign(@Body() createCampaignDto: CreateCampaignDto) {
     return this.campaignsService.createCampaign(createCampaignDto);
   }
 
+  @Post(':id/clients')
+  addClientCampaign(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: AddCampaignClientDto,
+  ) {
+    return this.campaignsService.addClientCampaign(id, dto.clientId);
+  }
+
   @Get()
-  findAll() {
-    return this.campaignsService.findAll();
+  findCampaignList() {
+    return this.campaignsService.findCampaignList();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.campaignsService.findOne(+id);
+  findCampaignDetail(@Param('id', ParseIntPipe) id: number) {
+    return this.campaignsService.findCampaignDetail(id);
   }
 
   @Patch(':id')
-  update(
+  updateCampaign(
     @Param('id') id: string,
     @Body() updateCampaignDto: UpdateCampaignDto,
   ) {
-    return this.campaignsService.update(+id, updateCampaignDto);
+    return this.campaignsService.updateCampaign(+id, updateCampaignDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.campaignsService.remove(+id);
+  removeCampaign(@Param('id') id: string) {
+    return this.campaignsService.removeCampaign(+id);
   }
 }

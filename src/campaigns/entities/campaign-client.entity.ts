@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Interaction } from './interaction.entity';
+import { Interaction } from '../../interactions/entities/interaction.entity';
 
 @Entity()
 @Unique(['campaign', 'client'])

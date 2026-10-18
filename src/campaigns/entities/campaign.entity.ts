@@ -1,4 +1,4 @@
-import { CampaignClient } from 'src/interactions/entities/campaign-client.entity';
+import { CampaignClient } from 'src/campaigns/entities/campaign-client.entity';
 import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
 import {
   Column,
