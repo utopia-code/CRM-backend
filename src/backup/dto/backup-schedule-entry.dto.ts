@@ -43,4 +43,8 @@ export class BackupScheduleEntryDto {
   @IsOptional()
   @IsInt()
   interactionId: number | null;
+
+  @IsOptional()
+  @IsInt()
+  campaignId: number | null;
 }

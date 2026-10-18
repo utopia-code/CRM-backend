@@ -54,4 +54,8 @@ export class BackupInteractionDto {
   @IsOptional()
   @IsInt()
   showId: number | null;
+
+  @IsOptional()
+  @IsInt()
+  campaignClientId: number | null;
 }
