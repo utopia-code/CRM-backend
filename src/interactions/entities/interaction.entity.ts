@@ -11,11 +11,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CampaignClient } from '../../campaigns/entities/campaign-client.entity';
 import { CampaignResult } from '../enums/campaign-result';
 import { InteractionCategory } from '../enums/interaction-category.enum';
 import { InteractionType } from '../enums/interaction-type.enum';
 import { ProposalStatus } from '../enums/proposal-status.enum';
-import { CampaignClient } from './campaign-client.entity';
 
 @Entity()
 export class Interaction {
@@ -50,7 +50,7 @@ export class Interaction {
   @Column({
     type: 'enum',
     enum: CampaignResult,
-    default: CampaignResult.UNQUALIFIED,
+    default: CampaignResult.NOT_CONTACTED,
   })
   campaignResult?: CampaignResult;
 

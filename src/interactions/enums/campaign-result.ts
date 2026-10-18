@@ -1,5 +1,4 @@
 export enum CampaignResult {
-  UNQUALIFIED = 'UNQUALIFIED',
   POSITIVE = 'POSITIVE',
   PENDING = 'PENDING',
   NEGATIVE = 'NEGATIVE',
