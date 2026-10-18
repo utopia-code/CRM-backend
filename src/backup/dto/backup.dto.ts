@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsDateString, IsInt, ValidateNested } from 'class-validator';
 
+import { BackupCampaignClientDto } from './backup-campaign-client.dto';
+import { BackupCampaignDto } from './backup-campaign.dto';
 import { BackupClientDto } from './backup-client.dto';
 import { BackupInteractionDto } from './backup-interaction.dto';
 import { BackupScheduleEntryDto } from './backup-schedule-entry.dto';
@@ -39,4 +41,12 @@ export class BackupDataDto {
   @ValidateNested({ each: true })
   @Type(() => BackupScheduleEntryDto)
   scheduleEntries: BackupScheduleEntryDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => BackupCampaignDto)
+  campaigns: BackupCampaignDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => BackupCampaignClientDto)
+  campaignClients: BackupCampaignClientDto[];
 }

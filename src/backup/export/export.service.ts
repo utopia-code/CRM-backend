@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { CampaignClient } from 'src/campaigns/entities/campaign-client.entity';
+import { Campaign } from 'src/campaigns/entities/campaign.entity';
 import { Show } from 'src/catalog/entities/show.entity';
 import { Client } from 'src/client/entities/client.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
@@ -35,6 +37,24 @@ export class ExportService {
       },
     });
 
+    const campaignRepository = this.dataSource.getRepository(Campaign);
+
+    const campaigns = await campaignRepository.find({
+      relations: {
+        scheduleEntry: true,
+      },
+    });
+
+    const campaignClientRepository =
+      this.dataSource.getRepository(CampaignClient);
+
+    const campaignClients = await campaignClientRepository.find({
+      relations: {
+        campaign: true,
+        client: true,
+      },
+    });
+
     const interactionRepository = this.dataSource.getRepository(Interaction);
 
     const interactions = await interactionRepository.find({
@@ -43,6 +63,7 @@ export class ExportService {
         task: true,
         show: true,
         scheduleEntry: true,
+        campaignClient: true,
       },
     });
 
@@ -52,6 +73,7 @@ export class ExportService {
       relations: {
         task: true,
         interaction: true,
+        campaign: true,
       },
     });
 
@@ -106,6 +128,20 @@ export class ExportService {
           clientId: task.client ? task.client.id : null,
         })),
 
+        campaigns: campaigns.map((campaign) => ({
+          id: campaign.id,
+          name: campaign.name,
+          status: campaign.status,
+          description: campaign.description ?? null,
+        })),
+
+        campaignClients: campaignClients.map((cc) => ({
+          id: cc.id,
+          campaignId: cc.campaign.id,
+          clientId: cc.client.id,
+          createdAt: cc.createdAt.toISOString(),
+        })),
+
         interactions: interactions.map((interaction) => ({
           id: interaction.id,
           category: interaction.category,
@@ -125,6 +161,9 @@ export class ExportService {
             ? interaction.scheduleEntry.id
             : null,
           showId: interaction.show ? interaction.show.id : null,
+          campaignClientId: interaction.campaignClient
+            ? interaction.campaignClient.id
+            : null,
         })),
 
         scheduleEntries: scheduleEntries.map((entry) => ({
@@ -139,6 +178,7 @@ export class ExportService {
           reminderStatus: entry.reminderStatus,
           taskId: entry.task ? entry.task.id : null,
           interactionId: entry.interaction ? entry.interaction.id : null,
+          campaignId: entry.campaign ? entry.campaign.id : null,
         })),
       },
     };
