@@ -26,12 +26,12 @@ export class ClientController {
 
   @Get('list')
   findListOfClients(): Promise<ClientListDto[]> {
-    return this.clientService.findLClientsList();
+    return this.clientService.findClientsList();
   }
 
   @Get('organization-list')
   findListOfOrganizations(): Promise<ClientNameDto[]> {
-    return this.clientService.findLClientsList();
+    return this.clientService.findClientsList();
   }
 
   @Get()

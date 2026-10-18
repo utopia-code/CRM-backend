@@ -58,7 +58,7 @@ export class ClientService {
     });
   }
 
-  async findLClientsList(): Promise<ClientListDto[]> {
+  async findClientsList(): Promise<ClientListDto[]> {
     const clients = await this.clientRepo
       .createQueryBuilder('client')
       .leftJoinAndSelect('client.contacts', 'contact')
@@ -168,20 +168,20 @@ export class ClientService {
       .select('COUNT(interaction.id)', 'total')
       .addSelect(
         `
-                SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
-              `,
+        SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
+        `,
         'calls',
       )
       .addSelect(
         `
-                SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
-              `,
+          SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
+        `,
         'emails',
       )
       .addSelect(
         `
-                SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
-              `,
+          SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
+        `,
         'meetings',
       )
       .where('interaction.clientId = :id', { id })
