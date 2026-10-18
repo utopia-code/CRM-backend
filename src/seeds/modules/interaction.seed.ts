@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { DataSource } from 'typeorm';
 
+import { CampaignClient } from 'src/campaigns/entities/campaign-client.entity';
 import { Show } from 'src/catalog/entities/show.entity';
 import { Client } from 'src/client/entities/client.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
@@ -15,9 +16,15 @@ export async function seedInteractions(
   clients: Client[],
   tasks: Task[],
   shows: Show[],
+  campaignClients: CampaignClient[] = [],
   amount = 120,
 ): Promise<Interaction[]> {
   const repo = dataSource.getRepository(Interaction);
+
+  if (!clients.length) {
+    console.log('✔ 0 interacciones: no hay clientes');
+    return [];
+  }
 
   const interactions: Interaction[] = [];
 
@@ -32,6 +39,16 @@ export async function seedInteractions(
             probability: 0.35,
           }) ?? null)
         : null;
+
+    const campaignClient =
+      campaignClients.length > 0
+        ? (faker.helpers.maybe(
+            () => faker.helpers.arrayElement(campaignClients),
+            { probability: 0.5 },
+          ) ?? null)
+        : null;
+
+    const interactionClient = campaignClient?.client ?? client;
 
     const interaction = repo.create({
       category: faker.helpers.arrayElement(Object.values(InteractionCategory)),
@@ -83,7 +100,7 @@ export async function seedInteractions(
 
       proposalStatus: faker.helpers.arrayElement(Object.values(ProposalStatus)),
 
-      client,
+      client: interactionClient,
 
       task,
 
@@ -91,6 +108,8 @@ export async function seedInteractions(
         faker.helpers.maybe(() => faker.helpers.arrayElement(shows), {
           probability: 0.5,
         }) ?? null,
+
+      campaignClient,
     });
 
     interactions.push(await repo.save(interaction));

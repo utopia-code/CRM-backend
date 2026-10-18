@@ -1,4 +1,6 @@
 import { DataSource } from 'typeorm';
+import { seedCampaignClients } from './modules/campaign-clients.seed';
+import { seedCampaigns } from './modules/campaign.seed';
 import { seedClients } from './modules/client.seed';
 import { seedContacts } from './modules/contact.seed';
 import { seedInteractions } from './modules/interaction.seed';
@@ -9,6 +11,8 @@ import { seedTasks } from './modules/task.seed';
 const tables = [
   'schedule_entry',
   'interaction',
+  'campaign_client',
+  'campaign',
   'task',
   'contact',
   'client',
@@ -26,14 +30,23 @@ export async function runSeed(dataSource: DataSource) {
 
   const tasks = await seedTasks(dataSource, clients);
 
+  const campaigns = await seedCampaigns(dataSource);
+
+  const campaignClients = await seedCampaignClients(
+    dataSource,
+    campaigns,
+    clients,
+  );
+
   const interactions = await seedInteractions(
     dataSource,
     clients,
     tasks,
     shows,
+    campaignClients,
   );
 
-  await seedSchedule(dataSource, tasks, interactions);
+  await seedSchedule(dataSource, tasks, interactions, campaigns);
 }
 
 async function clearDatabase(dataSource: DataSource): Promise<void> {

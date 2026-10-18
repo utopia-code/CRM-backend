@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 
 import { ScheduleEntry } from 'src/schedule/entities/schedule-entry.entity';
 
+import { Campaign } from 'src/campaigns/entities/campaign.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { ReminderStatus } from 'src/schedule/enums/reminder-status.enum';
 import { ScheduleType } from 'src/schedule/enums/schedule-type.enum';
@@ -12,6 +13,7 @@ export async function seedSchedule(
   dataSource: DataSource,
   tasks: Task[],
   interactions: Interaction[],
+  campaigns: Campaign[] = [],
 ): Promise<ScheduleEntry[]> {
   const repo = dataSource.getRepository(ScheduleEntry);
 
@@ -108,6 +110,22 @@ export async function seedSchedule(
       reminderDate: null,
       reminderStatus: ReminderStatus.COMPLETED,
       interaction,
+    });
+
+    schedules.push(await repo.save(schedule));
+  }
+
+  for (const campaign of campaigns) {
+    const startDate = faker.date.soon({ days: 60 });
+
+    const schedule = repo.create({
+      type: ScheduleType.CAMPAIGN,
+      title: campaign.name,
+      startDate,
+      endDate: null,
+      reminderDate: null,
+      reminderStatus: ReminderStatus.COMPLETED,
+      campaign,
     });
 
     schedules.push(await repo.save(schedule));
