@@ -1,4 +1,4 @@
-import { CampaignClient } from 'src/interactions/entities/campaign-client.entity';
+import { CampaignClient } from 'src/campaigns/entities/campaign-client.entity';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import {

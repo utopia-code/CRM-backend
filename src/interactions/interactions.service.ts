@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Show } from 'src/catalog/entities/show.entity';
 import { Client } from 'src/client/entities/client.entity';
 import { Repository } from 'typeorm';
+import { CampaignClient } from '../campaigns/entities/campaign-client.entity';
 import { CreateCampaignInteractionDto } from './dtos/create-campaign-interaction.dto';
 import { CreateInteractionDto } from './dtos/create-interaction.dto';
-import { CampaignClient } from './entities/campaign-client.entity';
 import { Interaction } from './entities/interaction.entity';
 import { InteractionCategory } from './enums/interaction-category.enum';
 
