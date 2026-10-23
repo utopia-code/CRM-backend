@@ -1,4 +1,6 @@
+import { Type } from 'class-transformer';
 import {
+  IsDateString,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -27,5 +29,9 @@ export class CreateInteractionDto {
 
   @IsInt()
   @Min(1)
+  @Type(() => Number)
   clientId: number;
+
+  @IsDateString()
+  startDate: string;
 }

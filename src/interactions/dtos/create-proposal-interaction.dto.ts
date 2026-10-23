@@ -7,13 +7,8 @@ export class CreateProposalInteractionDto extends CreateInteractionDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   amount?: number;
 
-  @IsOptional()
   @IsEnum(ProposalStatus)
-  proposalStatus?: ProposalStatus;
-
-  @IsInt()
-  @Min(1)
-  clientId: number;
+  proposalStatus: ProposalStatus;
 
   @IsOptional()
   @IsInt()
