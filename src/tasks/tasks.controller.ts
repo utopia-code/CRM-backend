@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ClientTaskDto } from './dtos/client-task.dto';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { RecentTasksDto } from './dtos/recent-tasks.dto';
 import { UpdateTaskStatusDto } from './dtos/update-task-status.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 import { TasksService } from './tasks.service';
@@ -27,6 +28,11 @@ export class TasksController {
   @Get('list')
   findAllTasks() {
     return this.taskService.findAllTasks();
+  }
+
+  @Get('recent')
+  findRecentInteractions(): Promise<RecentTasksDto[]> {
+    return this.taskService.findRecentTasks();
   }
 
   @Get()

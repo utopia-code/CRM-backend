@@ -9,6 +9,7 @@ import { ScheduleType } from 'src/schedule/enums/schedule-type.enum';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ClientTaskDto } from './dtos/client-task.dto';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { RecentTasksDto } from './dtos/recent-tasks.dto';
 import { TaskDetailDto } from './dtos/task-detail.dto';
 import { TaskListDto } from './dtos/task-list.dto';
 import { TaskDto } from './dtos/task.dto';
@@ -232,6 +233,30 @@ export class TasksService {
 
       endDate: task.scheduleEntry?.endDate ?? null,
       reminderDate: task.scheduleEntry?.reminderDate ?? null,
+    }));
+  }
+
+  async findRecentTasks(): Promise<RecentTasksDto[]> {
+    const tasks = await this.taskRepo
+      .createQueryBuilder('task')
+      .leftJoin('task.scheduleEntry', 'scheduleEntry')
+      .select('task.id', 'id')
+      .addSelect('task.title', 'title')
+      .addSelect('task.status', 'status')
+      .addSelect('scheduleEntry.endDate', 'endDate')
+      .where('task.status != :status', {
+        status: TaskStatus.DONE,
+      })
+      .orderBy('scheduleEntry.endDate', 'ASC', 'NULLS LAST')
+      .addOrderBy('task.id', 'DESC')
+      .take(20)
+      .getRawMany();
+
+    return tasks.map((task) => ({
+      id: Number(task.id),
+      title: task.title,
+      status: task.status,
+      endDate: task.endDate ? new Date(task.endDate) : null,
     }));
   }
 
