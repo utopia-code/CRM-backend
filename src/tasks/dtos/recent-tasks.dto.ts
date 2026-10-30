@@ -5,4 +5,5 @@ export class RecentTasksDto {
   title: string;
   status: TaskStatus;
   endDate: Date | null;
+  organization: string | null;
 }

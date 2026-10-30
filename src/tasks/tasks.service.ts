@@ -239,11 +239,13 @@ export class TasksService {
   async findRecentTasks(): Promise<RecentTasksDto[]> {
     const tasks = await this.taskRepo
       .createQueryBuilder('task')
+      .leftJoin('task.client', 'client')
       .leftJoin('task.scheduleEntry', 'scheduleEntry')
       .select('task.id', 'id')
       .addSelect('task.title', 'title')
       .addSelect('task.status', 'status')
       .addSelect('scheduleEntry.endDate', 'endDate')
+      .addSelect('client.organization', 'organization')
       .where('task.status != :status', {
         status: TaskStatus.DONE,
       })
@@ -257,6 +259,7 @@ export class TasksService {
       title: task.title,
       status: task.status,
       endDate: task.endDate ? new Date(task.endDate) : null,
+      organization: task.organization ?? null,
     }));
   }
 
