@@ -37,16 +37,6 @@ export class InteractionsController {
     return this.interactionsService.createProposalInteraction(dto);
   }
 
-  @Get('clients/:clientId/interactions')
-  findClientInteractions(@Param('id', ParseIntPipe) clientId: number) {
-    return this.interactionsService.findClientInteractions(clientId);
-  }
-
-  @Get('clients/:clientId/proposals')
-  findClientProposals(@Param('id', ParseIntPipe) clientId: number) {
-    return this.interactionsService.findClientProposals(clientId);
-  }
-
   @Get('recent')
   findRecentInteractions() {
     return this.interactionsService.findRecentInteractions();
@@ -55,6 +45,16 @@ export class InteractionsController {
   @Get('summary-weekly')
   getWeeklyInteractionSummary() {
     return this.interactionsService.getWeeklyInteractionSummary();
+  }
+
+  @Get('clients/:clientId/interactions')
+  findClientInteractions(@Param('id', ParseIntPipe) clientId: number) {
+    return this.interactionsService.findClientInteractions(clientId);
+  }
+
+  @Get('clients/:clientId/proposals')
+  findClientProposals(@Param('id', ParseIntPipe) clientId: number) {
+    return this.interactionsService.findClientProposals(clientId);
   }
 
   @Patch(':id/campaign')
