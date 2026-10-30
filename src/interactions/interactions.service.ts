@@ -45,6 +45,7 @@ export class InteractionsService {
       .addSelect('interaction.category', 'category')
       .addSelect('interaction.subject', 'subject')
       .addSelect('schedule.startDate', 'startDate')
+      .addSelect('client.id', 'clientId')
       .addSelect('client.organization', 'organization')
       .orderBy('schedule.startDate', 'DESC')
       .addOrderBy('interaction.id', 'DESC')
@@ -58,6 +59,7 @@ export class InteractionsService {
       subject: row.subject,
       startDate: new Date(row.startDate),
       organization: row.organization ?? null,
+      clientId: row.clientId,
     }));
   }
 

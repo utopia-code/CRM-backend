@@ -8,4 +8,5 @@ export class RecentInteractionDto {
   subject: string;
   startDate: Date;
   organization: string | null;
+  clientId: number;
 }
