@@ -35,6 +35,8 @@ export class BackupInteractionDto {
   campaignResult: CampaignResult;
 
   @IsOptional()
+  // @IsNumber()
+  // amount: number | null;
   @IsNumberString()
   amount: string | null;
 

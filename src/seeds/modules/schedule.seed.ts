@@ -84,10 +84,6 @@ export async function seedSchedule(
    * No generan avisos.
    */
   for (const interaction of interactions) {
-    if (Math.random() > 0.5) {
-      continue;
-    }
-
     const startDate = faker.date.recent({
       days: 60,
     });
