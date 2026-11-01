@@ -21,10 +21,12 @@ import { RecentInteractionDto } from './dtos/recent-interaction.dto';
 import { UpdateCampaignInteractionDto } from './dtos/update-campaign-interaction.dto';
 import { UpdateInteractionDto } from './dtos/update-interaction.dto';
 import { UpdateProposalInteractionDto } from './dtos/update-proposal-interaction.dto';
-import { WeeklyInteractionSummaryDto } from './dtos/weeklyInteraction-summary.dto';
+import {
+  WeeklyInteractionDayDto,
+  WeeklyInteractionSummaryDto,
+} from './dtos/weekly-interaction-summary.dto';
 import { Interaction } from './entities/interaction.entity';
 import { InteractionCategory } from './enums/interaction-category.enum';
-import { InteractionType } from './enums/interaction-type.enum';
 
 @Injectable()
 export class InteractionsService {
@@ -64,45 +66,127 @@ export class InteractionsService {
   }
 
   async getWeeklyInteractionSummary(): Promise<WeeklyInteractionSummaryDto> {
-    const row = await this.interactionRepo
+    const now = new Date();
+
+    const monday = new Date(now);
+    const dayOfWeek = monday.getDay();
+
+    const daysSinceMonday = (dayOfWeek + 6) % 7;
+
+    monday.setDate(monday.getDate() - daysSinceMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    const nextMonday = new Date(monday);
+    nextMonday.setDate(nextMonday.getDate() + 7);
+
+    const rows = await this.interactionRepo
       .createQueryBuilder('interaction')
       .innerJoin('interaction.scheduleEntry', 'schedule')
-      .select(
+      .select(`(schedule.startDate AT TIME ZONE 'Europe/Madrid')::date`, 'date')
+      .addSelect(
         `COUNT(*) FILTER (
-        WHERE interaction.type = :call
-      )`,
+      WHERE interaction.type = 'CALL'
+    )`,
         'call',
       )
       .addSelect(
         `COUNT(*) FILTER (
-        WHERE interaction.type = :email
-      )`,
+      WHERE interaction.type = 'EMAIL'
+    )`,
         'email',
       )
       .addSelect(
         `COUNT(*) FILTER (
-        WHERE interaction.type = :meeting
-      )`,
+      WHERE interaction.type = 'MEETING'
+    )`,
         'meeting',
       )
       .where(
-        'schedule.startDate >= :fromDate AND schedule.startDate <= :toDate',
+        'schedule.startDate >= :fromDate AND schedule.startDate < :toDate',
         {
-          fromDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-          toDate: new Date(),
+          fromDate: monday,
+          toDate: nextMonday,
         },
       )
-      .setParameters({
-        call: InteractionType.CALL,
-        email: InteractionType.EMAIL,
-        meeting: InteractionType.MEETING,
-      })
-      .getRawOne();
+      .groupBy(`(schedule.startDate AT TIME ZONE 'Europe/Madrid')::date`)
+      .orderBy(`(schedule.startDate AT TIME ZONE 'Europe/Madrid')::date`, 'ASC')
+      .getRawMany();
+
+    console.log('ROWS AGRUPADAS:', rows);
+
+    // mapping with results
+    const interactionsByDate = new Map(
+      rows.map((row) => {
+        const dateKey =
+          row.date instanceof Date
+            ? new Date(
+                row.date.getTime() + new Date().getTimezoneOffset() * 60_000,
+              )
+                .toISOString()
+                .slice(0, 10)
+            : String(row.date).slice(0, 10);
+
+        return [
+          dateKey,
+          {
+            call: Number(row.call),
+            email: Number(row.email),
+            meeting: Number(row.meeting),
+          },
+        ];
+      }),
+    );
+
+    const dayNames = ['Lun', 'Mar', 'Mér', 'Xov', 'Ven', 'Sáb', 'Dom'];
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // set the days of the week
+    const days: WeeklyInteractionDayDto[] = Array.from(
+      { length: 7 },
+      (_, index) => {
+        const date = new Date(monday);
+
+        date.setDate(monday.getDate() + index);
+
+        const dateKey = [
+          date.getFullYear(),
+          String(date.getMonth() + 1).padStart(2, '0'),
+          String(date.getDate()).padStart(2, '0'),
+        ].join('-');
+
+        const dailyInteractions = interactionsByDate.get(dateKey);
+
+        return {
+          date: dateKey,
+          dayName: dayNames[index],
+          isToday: date.getTime() === today.getTime(),
+
+          call: dailyInteractions?.call ?? 0,
+          email: dailyInteractions?.email ?? 0,
+          meeting: dailyInteractions?.meeting ?? 0,
+        };
+      },
+    );
+
+    // calculete totals in week
+    const totals = days.reduce(
+      (acc, day) => ({
+        call: acc.call + day.call,
+        email: acc.email + day.email,
+        meeting: acc.meeting + day.meeting,
+      }),
+      {
+        call: 0,
+        email: 0,
+        meeting: 0,
+      },
+    );
 
     return {
-      call: Number(row.call),
-      email: Number(row.email),
-      meeting: Number(row.meeting),
+      totals,
+      days,
     };
   }
 
