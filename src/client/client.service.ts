@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Interaction } from 'src/interactions/entities/interaction.entity';
+import { InteractionCategory } from 'src/interactions/enums/interaction-category.enum';
 import { InteractionType } from 'src/interactions/enums/interaction-type.enum';
 import { Task } from 'src/tasks/entities/task.entity';
 import { TaskStatus } from 'src/tasks/enums/task-status.enum';
@@ -166,46 +167,33 @@ export class ClientService {
     const interactions = await this.interactionRepo
       .createQueryBuilder('interaction')
       .select('COUNT(interaction.id)', 'total')
+      .addSelect('COUNT(*) FILTER (WHERE interaction.type = :call)', 'calls')
+      .addSelect('COUNT(*) FILTER (WHERE interaction.type = :email)', 'emails')
       .addSelect(
-        `
-        SUM(CASE WHEN interaction.type = :call THEN 1 ELSE 0 END)
-        `,
-        'calls',
-      )
-      .addSelect(
-        `
-          SUM(CASE WHEN interaction.type = :email THEN 1 ELSE 0 END)
-        `,
-        'emails',
-      )
-      .addSelect(
-        `
-          SUM(CASE WHEN interaction.type = :meetings THEN 1 ELSE 0 END)
-        `,
+        'COUNT(*) FILTER (WHERE interaction.type = :meeting)',
         'meetings',
       )
-      .where('interaction.clientId = :id', { id })
+      .addSelect(
+        'COUNT(*) FILTER (WHERE interaction.category = :proposal)',
+        'proposals',
+      )
       .setParameters({
         call: InteractionType.CALL,
         email: InteractionType.EMAIL,
-        meetings: InteractionType.MEETING,
+        meeting: InteractionType.MEETING,
+        proposal: InteractionCategory.PROPOSAL,
       })
+      .where('interaction.clientId = :id', { id })
       .getRawOne();
 
     const tasks = await this.tasksRepo
       .createQueryBuilder('task')
-      .select(
-        `
-        SUM(CASE WHEN task.status = :done THEN 1 ELSE 0 END)
-      `,
+      .select('COUNT(task.id)', 'total')
+      .addSelect(
+        'COUNT(*) FILTER (WHERE task.status = :done)',
         'completedTasks',
       )
-      .addSelect(
-        `
-        SUM(CASE WHEN task.status != :done THEN 1 ELSE 0 END)
-      `,
-        'pendingTasks',
-      )
+      .addSelect('COUNT(*) FILTER (WHERE task.status != :done)', 'pendingTasks')
       .where('task.clientId = :clientId', { clientId: id })
       .setParameter('done', TaskStatus.DONE)
       .getRawOne();
@@ -229,8 +217,13 @@ export class ClientService {
         calls: Number(interactions?.calls ?? 0),
         emails: Number(interactions?.emails ?? 0),
         meetings: Number(interactions?.meetings ?? 0),
+
         completedTasks: Number(tasks?.completedTasks ?? 0),
         pendingTasks: Number(tasks?.pendingTasks ?? 0),
+        tasksCount: Number(tasks?.total ?? 0),
+
+        interactionsCount: Number(interactions?.total ?? 0),
+        proposalsCount: Number(interactions?.proposals ?? 0),
       },
     };
   }

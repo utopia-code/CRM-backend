@@ -21,5 +21,9 @@ export class ClientDetailDto {
     meetings: number;
     completedTasks: number;
     pendingTasks: number;
+
+    interactionsCount: number;
+    proposalsCount: number;
+    tasksCount: number;
   };
 }
