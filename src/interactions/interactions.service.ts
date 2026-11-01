@@ -194,6 +194,7 @@ export class InteractionsService {
     const rows = await this.interactionRepo
       .createQueryBuilder('interaction')
       .innerJoin('interaction.scheduleEntry', 'schedule')
+      .innerJoin('interaction.client', 'client')
       .select('interaction.id', 'id')
       .addSelect('interaction.type', 'type')
       .addSelect('interaction.category', 'category')
@@ -201,7 +202,7 @@ export class InteractionsService {
       .addSelect('interaction.notes', 'notes')
       .addSelect('interaction.duration', 'duration')
       .addSelect('schedule.startDate', 'startDate')
-      .where('interaction.client_id = :clientId', { clientId })
+      .where('client.id = :clientId', { clientId })
       // .andWhere('interaction.category != :proposal', {
       //   proposal: InteractionCategory.PROPOSAL,
       // })
@@ -227,6 +228,7 @@ export class InteractionsService {
     const rows = await this.interactionRepo
       .createQueryBuilder('interaction')
       .innerJoin('interaction.scheduleEntry', 'schedule')
+      .innerJoin('interaction.client', 'client')
       .leftJoin('interaction.show', 'show')
       .select('interaction.id', 'id')
       .addSelect('interaction.type', 'type')
@@ -238,7 +240,7 @@ export class InteractionsService {
       .addSelect('interaction.proposalStatus', 'proposalStatus')
       .addSelect('schedule.startDate', 'startDate')
       .addSelect('show.name', 'show')
-      .where('interaction.client_id = :clientId', { clientId })
+      .where('client.id = :clientId', { clientId })
       .andWhere('interaction.category = :category', {
         category: InteractionCategory.PROPOSAL,
       })

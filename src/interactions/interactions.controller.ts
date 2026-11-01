@@ -48,12 +48,12 @@ export class InteractionsController {
   }
 
   @Get('clients/:clientId/interactions')
-  findClientInteractions(@Param('id', ParseIntPipe) clientId: number) {
+  findClientInteractions(@Param('clientId', ParseIntPipe) clientId: number) {
     return this.interactionsService.findClientInteractions(clientId);
   }
 
   @Get('clients/:clientId/proposals')
-  findClientProposals(@Param('id', ParseIntPipe) clientId: number) {
+  findClientProposals(@Param('clientId', ParseIntPipe) clientId: number) {
     return this.interactionsService.findClientProposals(clientId);
   }
 

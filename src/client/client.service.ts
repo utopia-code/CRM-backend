@@ -180,7 +180,7 @@ export class ClientService {
       )
       .addSelect(
         `
-          SUM(CASE WHEN interaction.type = :visit THEN 1 ELSE 0 END)
+          SUM(CASE WHEN interaction.type = :meetings THEN 1 ELSE 0 END)
         `,
         'meetings',
       )
@@ -188,7 +188,7 @@ export class ClientService {
       .setParameters({
         call: InteractionType.CALL,
         email: InteractionType.EMAIL,
-        visit: InteractionType.MEETING,
+        meetings: InteractionType.MEETING,
       })
       .getRawOne();
 
@@ -228,7 +228,7 @@ export class ClientService {
       summary: {
         calls: Number(interactions?.calls ?? 0),
         emails: Number(interactions?.emails ?? 0),
-        meetings: Number(interactions?.visits ?? 0),
+        meetings: Number(interactions?.meetings ?? 0),
         completedTasks: Number(tasks?.completedTasks ?? 0),
         pendingTasks: Number(tasks?.pendingTasks ?? 0),
       },
